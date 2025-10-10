@@ -1,0 +1,38 @@
+﻿services:
+  db:
+    image: postgres:16-alpine
+    container_name: starapi-db
+    environment:
+      POSTGRES_DB: starblog
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  starapi:
+    image: starapi
+    container_name: starapi
+    build:
+      context: .
+      dockerfile: StarApi/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=starblog;Username=postgres;Password=postgres
+      - ApiKey=${API_KEY:-your-api-key-here-change-in-production}
+
+volumes:
+  postgres_data:
+
