@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using StarApi.Data;
 using StarApi.Middleware;
+using StarApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,8 +52,13 @@ builder.Services.AddCors(options =>
 });
 
 // Add Authentication
-builder.Services.AddAuthentication();
+builder.Services.AddAuthentication("ApiKey")
+    .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>("ApiKey", options => { });
 builder.Services.AddAuthorization();
+
+// Configure DigitalOcean Spaces options and service
+builder.Services.Configure<SpacesOptions>(builder.Configuration.GetSection("DigitalOceanSpaces"));
+builder.Services.AddSingleton<IDigitalOceanSpacesService, DigitalOceanSpacesService>();
 
 var app = builder.Build();
 
@@ -68,7 +74,6 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseCors();
-app.UseMiddleware<ApiKeyAuthenticationMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 

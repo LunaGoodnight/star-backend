@@ -36,6 +36,12 @@
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=starblog;Username=postgres;Password=postgres
       - ApiKey=${API_KEY:-your-api-key-here-change-in-production}
+      - DigitalOceanSpaces__Endpoint=${SPACES_ENDPOINT:-https://nyc3.digitaloceanspaces.com}
+      - DigitalOceanSpaces__AccessKey=${SPACES_ACCESS_KEY:-your-access-key}
+      - DigitalOceanSpaces__SecretKey=${SPACES_SECRET_KEY:-your-secret-key}
+      - DigitalOceanSpaces__Bucket=${SPACES_BUCKET:-your-bucket-name}
+      - DigitalOceanSpaces__CdnBaseUrl=${SPACES_CDN_BASE_URL:-}
+      - DigitalOceanSpaces__UseHttp=${SPACES_USE_HTTP:-false}
     networks:
       - starapi-network
 

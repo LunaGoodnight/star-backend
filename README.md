@@ -216,3 +216,91 @@ Use nginx or traefik to expose the API with a domain name and HTTPS.
 - **PostgreSQL** - Database
 - **Docker** - Containerization
 - **Swagger/OpenAPI** - API Documentation
+
+
+## Image Uploads via DigitalOcean Spaces
+
+- New endpoints:
+  - POST /api/uploads (Auth required): Upload an image file (multipart/form-data) and receive a public URL and object key.
+  - DELETE /api/uploads/{key} (Auth required): Delete a previously uploaded object by its key.
+
+### Configure DigitalOcean Spaces
+
+Add the following section to appsettings.json (already added with placeholders):
+
+```json
+{
+  "DigitalOceanSpaces": {
+    "Endpoint": "https://nyc3.digitaloceanspaces.com",
+    "AccessKey": "YOUR_SPACES_ACCESS_KEY",
+    "SecretKey": "YOUR_SPACES_SECRET_KEY",
+    "Bucket": "your-bucket-name",
+    "CdnBaseUrl": "",
+    "UseHttp": false
+  }
+}
+```
+
+You can also configure via environment variables:
+
+```bash
+DigitalOceanSpaces__Endpoint=https://nyc3.digitaloceanspaces.com
+DigitalOceanSpaces__AccessKey=your-access-key
+DigitalOceanSpaces__SecretKey=your-secret-key
+DigitalOceanSpaces__Bucket=your-bucket
+DigitalOceanSpaces__CdnBaseUrl=
+DigitalOceanSpaces__UseHttp=false
+```
+
+### Example: Upload an image with curl
+
+```bash
+curl -X POST http://localhost:8080/api/uploads \
+  -H "X-API-Key: your-secret-api-key-here" \
+  -F "file=@/full/path/to/image.jpg"
+```
+
+Response:
+
+```json
+{
+  "key": "uploads/2025/10/12/image-abcdef123456.jpg",
+  "url": "https://nyc3.digitaloceanspaces.com/your-bucket/uploads/2025/10/12/image-abcdef123456.jpg",
+  "contentType": "image/jpeg",
+  "size": 123456
+}
+```
+
+If you use a CDN like DigitalOcean CDN or Cloudflare in front of your Space, set CdnBaseUrl (e.g., https://cdn.example.com) to have the service return CDN URLs.
+
+
+
+## FAQ: Where should I put my API keys and Spaces credentials?
+
+Short answer: Do NOT paste your real secrets into appsettings.json that is checked into git. Use environment variables (e.g., a local .env file for Docker) or .NET User Secrets for local development.
+
+Recommended options:
+
+- Docker/.env (recommended when using docker-compose)
+  1) Copy .env.example to .env
+  2) Fill in your real values (API_KEY, SPACES_ACCESS_KEY, SPACES_SECRET_KEY, etc.)
+  3) Run docker-compose up -d
+  docker-compose automatically reads .env and injects values via compose.yaml (see DigitalOceanSpaces__* and ApiKey env vars).
+
+- .NET User Secrets (local development without Docker)
+  1) Navigate to the StarApi project folder (the one with StarApi.csproj)
+  2) Run:
+     dotnet user-secrets init
+     dotnet user-secrets set "ApiKey" "your-secret-api-key"
+     dotnet user-secrets set "DigitalOceanSpaces:Endpoint" "https://nyc3.digitaloceanspaces.com"
+     dotnet user-secrets set "DigitalOceanSpaces:AccessKey" "your-access-key"
+     dotnet user-secrets set "DigitalOceanSpaces:SecretKey" "your-secret-key"
+     dotnet user-secrets set "DigitalOceanSpaces:Bucket" "your-bucket"
+     dotnet user-secrets set "DigitalOceanSpaces:CdnBaseUrl" ""
+     dotnet user-secrets set "DigitalOceanSpaces:UseHttp" "false"
+
+Why not appsettings.json?
+- appsettings.json in this repo is a template with placeholders and is committed to version control. Committing real keys risks leaking secrets. The application is already configured to read configuration from environment variables (and user-secrets in Development), which override appsettings.json.
+
+How does the app read my secrets?
+- ASP.NET Core config binding merges appsettings.json + environment variables (and user-secrets in Development). Program.cs binds DigitalOceanSpaces section and ApiKey automatically. compose.yaml passes environment variables to the container.
