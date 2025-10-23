@@ -4,7 +4,9 @@
       "Bash(rm:*)",
       "Bash(dotnet tool list:*)",
       "Bash(dotnet tool update:*)",
-      "Bash(openssl rand:*)"
+      "Bash(openssl rand:*)",
+      "Bash(dir:*)",
+      "Bash(dotnet list package:*)"
     ],
     "deny": [],
     "ask": []

@@ -40,14 +40,19 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Add CORS
+// Add CORS - Configure allowed origins for production
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyOrigin()
+        // TODO: Replace with your actual frontend domain(s)
+        var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>()
+            ?? new[] { "http://localhost:3000", "http://localhost:5173" }; // Default for development
+
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowCredentials();
     });
 });
 
