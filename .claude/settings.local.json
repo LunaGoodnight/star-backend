@@ -7,7 +7,11 @@
       "Bash(openssl rand:*)",
       "Bash(dir:*)",
       "Bash(dotnet list package:*)",
-      "Bash(git check-ignore:*)"
+      "Bash(git check-ignore:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(del nul)"
     ],
     "deny": [],
     "ask": []
