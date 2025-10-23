@@ -156,10 +156,10 @@ curl -X POST http://localhost:5002/api/posts \
      -H "Content-Type: application/json" \
      -d '{"title":"Test","content":"Test"}'
 
-# Should succeed
+# Should succeed (use your API key from .env)
 curl -X POST http://localhost:5002/api/posts \
      -H "Content-Type: application/json" \
-     -H "X-API-Key: ndtxPclnW91si+YmRdiVMC1+rXlGz0wDZg8RVrCgOf4=" \
+     -H "X-API-Key: YOUR-API-KEY-HERE" \
      -d '{"title":"Test","content":"Test"}'
 ```
 
@@ -179,7 +179,7 @@ fetch('http://localhost:5002/api/posts', {
 ### ⚠️ Action Required
 
 1. **Update Your API Clients**
-   - Your frontend/mobile apps need to use the new API key: `ndtxPclnW91si+YmRdiVMC1+rXlGz0wDZg8RVrCgOf4=`
+   - Your frontend/mobile apps need to use the API key from your `.env` file
 
 2. **Configure DigitalOcean Spaces**
    - Uncomment and fill in the Spaces credentials in `.env` when you're ready to use file uploads

@@ -58,11 +58,11 @@ I have thoroughly reviewed your git repository and confirm that **NO SECRETS OR 
 
 **Contents of .env (NOT COMMITTED):**
 ```bash
-POSTGRES_PASSWORD=JTv12ZVMXiddUCpp+tDEKV45JqMhW/PrJasKXTSyp9w=
-API_KEY=ndtxPclnW91si+YmRdiVMC1+rXlGz0wDZg8RVrCgOf4=
+POSTGRES_PASSWORD=<your-generated-password>
+API_KEY=<your-generated-api-key>
 ```
 
-This file is **NEVER** committed to git. ✅
+This file contains your real credentials and is **NEVER** committed to git. ✅
 
 ---
 

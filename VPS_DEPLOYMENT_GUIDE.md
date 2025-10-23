@@ -104,14 +104,14 @@ cd /home/your-user/star-api/StarApi
 nano .env
 ```
 
-Paste the following content:
+Paste the following content (replace with your own generated credentials):
 
 ```bash
 # Database credentials
-POSTGRES_PASSWORD=JTv12ZVMXiddUCpp+tDEKV45JqMhW/PrJasKXTSyp9w=
+POSTGRES_PASSWORD=<paste-your-generated-password-here>
 
 # API Authentication
-API_KEY=ndtxPclnW91si+YmRdiVMC1+rXlGz0wDZg8RVrCgOf4=
+API_KEY=<paste-your-generated-api-key-here>
 
 # DigitalOcean Spaces (S3-compatible storage) - Optional
 # Uncomment and configure when you need file upload functionality
@@ -120,6 +120,15 @@ API_KEY=ndtxPclnW91si+YmRdiVMC1+rXlGz0wDZg8RVrCgOf4=
 # SPACES_SECRET_KEY=your-secret-key
 # SPACES_BUCKET=your-bucket-name
 # SPACES_CDN_BASE_URL=
+```
+
+**Generate your credentials:**
+```bash
+# Generate database password
+openssl rand -base64 32
+
+# Generate API key
+openssl rand -base64 32
 ```
 
 **Save and exit:**
@@ -387,7 +396,7 @@ Expected: `[]` or list of posts
 ```bash
 curl -X POST https://api.yourdomain.com/api/posts \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: ndtxPclnW91si+YmRdiVMC1+rXlGz0wDZg8RVrCgOf4=" \
+  -H "X-API-Key: YOUR-API-KEY-HERE" \
   -d '{"title":"My First Post","content":"Hello World!","isDraft":false}'
 ```
 
@@ -637,8 +646,9 @@ htop
 - Any files containing passwords, API keys, or credentials
 
 ⚠️ **Keep these secrets safe:**
-- Database Password: `JTv12ZVMXiddUCpp+tDEKV45JqMhW/PrJasKXTSyp9w=`
-- API Key: `ndtxPclnW91si+YmRdiVMC1+rXlGz0wDZg8RVrCgOf4=`
+- Database Password: Store securely in your `.env` file
+- API Key: Store securely in your `.env` file
+- Never commit these to version control
 
 ### Update CORS Before Going Live
 
@@ -681,8 +691,10 @@ The current `AllowedOrigins` is set to `http://localhost:1025` for development.
 ### Authentication Header
 
 ```
-X-API-Key: ndtxPclnW91si+YmRdiVMC1+rXlGz0wDZg8RVrCgOf4=
+X-API-Key: YOUR-API-KEY-HERE
 ```
+
+Use the API key you generated and added to your `.env` file.
 
 ### Support Files
 
