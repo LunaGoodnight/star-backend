@@ -24,7 +24,7 @@ ports:
 ### 2. ✅ Strong Database Password
 **Files:** `compose.yaml`, `.env`
 **Changes:**
-- Generated strong random password: `JTv12ZVMXiddUCpp+tDEKV45JqMhW/PrJasKXTSyp9w=`
+- Generated strong random password (use: `openssl rand -base64 32`)
 - Updated compose.yaml to use environment variable:
   ```yaml
   POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
@@ -38,10 +38,10 @@ ports:
 ### 3. ✅ Rotated API Key
 **Files:** `.env`
 **Changes:**
-- Generated new API key: `ndtxPclnW91si+YmRdiVMC1+rXlGz0wDZg8RVrCgOf4=`
-- Old key (exposed in audit) has been replaced
+- Generated new API key (use: `openssl rand -base64 32`)
+- Old key has been replaced
 
-**Impact:** The previous API key that was exposed is no longer valid.
+**Impact:** API key has been rotated for security.
 
 ---
 
@@ -89,19 +89,28 @@ policy.WithOrigins(allowedOrigins)  // ✅ SECURE
 
 ### Development Environment
 
-Your `.env` file now contains:
+Your `.env` file should contain:
 ```bash
 # Database credentials
-POSTGRES_PASSWORD=JTv12ZVMXiddUCpp+tDEKV45JqMhW/PrJasKXTSyp9w=
+POSTGRES_PASSWORD=<your-generated-password-here>
 
 # API Authentication
-API_KEY=ndtxPclnW91si+YmRdiVMC1+rXlGz0wDZg8RVrCgOf4=
+API_KEY=<your-generated-api-key-here>
 
 # DigitalOcean Spaces (uncomment and configure when needed)
 # SPACES_ENDPOINT=https://nyc3.digitaloceanspaces.com
 # SPACES_ACCESS_KEY=your-access-key
 # SPACES_SECRET_KEY=your-secret-key
 # SPACES_BUCKET=your-bucket-name
+```
+
+Generate credentials with:
+```bash
+# Generate database password
+openssl rand -base64 32
+
+# Generate API key
+openssl rand -base64 32
 ```
 
 ### Production Deployment

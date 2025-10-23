@@ -6,7 +6,8 @@
       "Bash(dotnet tool update:*)",
       "Bash(openssl rand:*)",
       "Bash(dir:*)",
-      "Bash(dotnet list package:*)"
+      "Bash(dotnet list package:*)",
+      "Bash(git check-ignore:*)"
     ],
     "deny": [],
     "ask": []

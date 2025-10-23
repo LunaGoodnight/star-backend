@@ -419,14 +419,15 @@ if (app.Environment.IsDevelopment())
 
 ## Sensitive Data Found 🔓
 
-**WARNING:** The following actual secrets were found in your codebase:
+**WARNING:** The following types of secrets should be checked in your codebase:
 
-1. **API Key:** `ViF7pOR+cpk12HJA/kUmSILBAhGBu5EvpXsaBNgyGS0=` (in `.env` file)
-   - **Action Required:** Rotate this key immediately if this code is in a public repository
+1. **API Key:** Check your `.env` file for API keys
+   - **Action Required:** Rotate keys immediately if this code is in a public repository
    - Generate new key: `openssl rand -base64 32`
 
-2. **Database Password:** `postgres` (default weak password)
+2. **Database Password:** Check for weak or default passwords
    - **Action Required:** Change to strong password immediately
+   - Generate new password: `openssl rand -base64 32`
 
 ---
 
