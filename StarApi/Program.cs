@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using StarApi.Data;
+using StarApi.Filters;
 using StarApi.Middleware;
 using StarApi.Services;
 
@@ -32,6 +33,9 @@ builder.Services.AddSwaggerGen(c =>
             Array.Empty<string>()
         }
     });
+
+    // Add file upload support for Swagger
+    c.OperationFilter<FileUploadOperationFilter>();
 });
 builder.Services.AddOpenApi();
 
