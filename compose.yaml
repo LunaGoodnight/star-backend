@@ -27,7 +27,7 @@
       context: .
       dockerfile: StarApi/Dockerfile
     ports:
-      - "5002:8080"
+      - "127.0.0.1:5002:8080"
     depends_on:
       db:
         condition: service_healthy
