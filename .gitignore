@@ -344,3 +344,11 @@ Thumbs.db
 
 # Environment Variables
 .env
+.env.local
+.env.*.local
+
+# Sensitive configuration files
+**/appsettings.*.json
+!**/appsettings.json
+!**/appsettings.Development.json
+!**/appsettings.Production.json

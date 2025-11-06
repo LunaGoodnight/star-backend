@@ -1,0 +1,95 @@
+================================================================================
+  CRITICAL SECURITY REQUIREMENTS - READ BEFORE DEPLOYING
+================================================================================
+
+YOUR APPLICATION WILL NOT START WITHOUT THESE ENVIRONMENT VARIABLES SET!
+
+1. Generate JWT Key (256-bit):
+   Command: openssl rand -base64 32
+   Set in .env: Jwt__Key=<generated-key>
+
+2. Generate API Key:
+   Command: openssl rand -hex 32
+   Set in .env: ApiKey=<generated-key>
+
+3. Create Strong Admin Credentials:
+   Set in .env:
+   Admin__Username=<your-unique-username>
+   Admin__Password=<your-strong-password-16+chars>
+
+4. Database Connection:
+   Set in .env: ConnectionStrings__DefaultConnection=Host=...;Password=<strong-password>
+
+5. Environment:
+   Set in .env: ASPNETCORE_ENVIRONMENT=Production
+
+================================================================================
+SECURITY FIXES APPLIED:
+================================================================================
+
+✓ Removed hardcoded JWT key (dev-secret-key-change-in-production-1234567890)
+✓ Removed hardcoded admin credentials (admin/changeme)
+✓ Added HTTPS enforcement with HSTS
+✓ Added security headers (X-Frame-Options, X-Content-Type-Options, etc.)
+✓ Disabled Swagger in production (only works in Development)
+✓ Added rate limiting to login endpoint (5 attempts per minute)
+✓ Reduced JWT token expiration to 15 minutes
+✓ Updated .gitignore to prevent secret leaks
+
+================================================================================
+DEPLOYMENT WITH CERTBOT:
+================================================================================
+
+After setting up .env file with all secrets above:
+
+1. Install nginx and certbot
+2. Configure nginx as reverse proxy to localhost:5000
+3. Run: sudo certbot --nginx -d staradmin.vividcats.org
+4. Restart your application
+
+Your API will be accessible at: https://staradmin.vividcats.org
+
+================================================================================
+VERIFY SECURITY AFTER DEPLOYMENT:
+================================================================================
+
+Test 1: Swagger should be disabled (404)
+  curl https://staradmin.vividcats.org/swagger
+
+Test 2: Security headers should be present
+  curl -I https://staradmin.vividcats.org
+
+Test 3: Rate limiting should work (6th attempt gets 429)
+  Try logging in 6 times with wrong credentials
+
+Test 4: HTTP should redirect to HTTPS
+  curl -I http://staradmin.vividcats.org
+
+================================================================================
+EXAMPLE .env FILE FOR YOUR VPS:
+================================================================================
+
+# Generate these with: openssl rand -base64 32 and openssl rand -hex 32
+Jwt__Key=YOUR_GENERATED_JWT_KEY_HERE_MIN_32_CHARS
+ApiKey=YOUR_GENERATED_API_KEY_HERE
+Admin__Username=YOUR_SECURE_ADMIN_USERNAME
+Admin__Password=YOUR_STRONG_PASSWORD_16+_CHARS
+
+# Your database
+ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=starblog;Username=postgres;Password=YOUR_DB_PASSWORD
+
+# DigitalOcean Spaces
+DigitalOceanSpaces__AccessKey=YOUR_SPACES_ACCESS_KEY
+DigitalOceanSpaces__SecretKey=YOUR_SPACES_SECRET_KEY
+DigitalOceanSpaces__BucketName=cute33
+DigitalOceanSpaces__Region=sgp1
+DigitalOceanSpaces__Endpoint=https://sgp1.digitaloceanspaces.com
+DigitalOceanSpaces__CdnBaseUrl=https://cute33.sgp1.cdn.digitaloceanspaces.com
+
+# Environment
+ASPNETCORE_ENVIRONMENT=Production
+ASPNETCORE_URLS=http://localhost:5000
+
+================================================================================
+IMPORTANT: Secure your .env file with: chmod 600 .env
+================================================================================

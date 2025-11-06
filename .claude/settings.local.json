@@ -11,7 +11,12 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(del nul)"
+      "Bash(del nul)",
+      "Bash(dotnet add:*)",
+      "Bash(test:*)",
+      "Bash(powershell -File D:side-projectstar-apiplay-question-sound.ps1)",
+      "Bash(powershell -File:*)",
+      "Bash(start \"https://downloads.khinsider.com/game-soundtracks/album/symphonic-suite-dragon-quest-scene-separated-i-ix-2011/10-22.%2520Inn.mp3\")"
     ],
     "deny": [],
     "ask": []
