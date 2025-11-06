@@ -20,8 +20,8 @@ public class DigitalOceanSpacesService : IDigitalOceanSpacesService
 
         var s3Config = new AmazonS3Config
         {
-            ServiceURL = _options.Endpoint, // e.g., https://nyc3.digitaloceanspaces.com
-            ForcePathStyle = true,
+            ServiceURL = _options.Endpoint, // e.g., https://sgp1.digitaloceanspaces.com
+            ForcePathStyle = false, // Use virtual-hosted style for DigitalOcean Spaces
             SignatureVersion = "v4",
             UseHttp = _options.UseHttp
         };

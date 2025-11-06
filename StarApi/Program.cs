@@ -133,15 +133,39 @@ builder.Services.AddRateLimiter(options =>
 });
 
 // Configure DigitalOcean Spaces options and service using AWS configuration
+// Support multiple configuration sources with fallbacks (like memeService)
 builder.Services.Configure<SpacesOptions>(options =>
 {
     var awsSection = builder.Configuration.GetSection("AWS");
-    options.AccessKey = awsSection.GetValue<string>("AccessKey") ?? "";
-    options.SecretKey = awsSection.GetValue<string>("SecretKey") ?? "";
-    options.Endpoint = awsSection.GetValue<string>("ServiceURL") ?? "";
-    options.Bucket = awsSection.GetValue<string>("BucketName") ?? "";
-    options.CdnBaseUrl = awsSection.GetValue<string>("CdnBaseUrl") ?? "";
-    options.UseHttp = awsSection.GetValue<bool>("UseHttp");
+
+    options.AccessKey = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY")
+                       ?? Environment.GetEnvironmentVariable("AWS__AccessKey")
+                       ?? awsSection.GetValue<string>("AccessKey")
+                       ?? "";
+
+    options.SecretKey = Environment.GetEnvironmentVariable("AWS_SECRET_KEY")
+                       ?? Environment.GetEnvironmentVariable("AWS__SecretKey")
+                       ?? awsSection.GetValue<string>("SecretKey")
+                       ?? "";
+
+    options.Endpoint = Environment.GetEnvironmentVariable("AWS_SERVICE_URL")
+                      ?? Environment.GetEnvironmentVariable("AWS__ServiceURL")
+                      ?? awsSection.GetValue<string>("ServiceURL")
+                      ?? "";
+
+    options.Bucket = Environment.GetEnvironmentVariable("AWS_BUCKET_NAME")
+                    ?? Environment.GetEnvironmentVariable("AWS__BucketName")
+                    ?? awsSection.GetValue<string>("BucketName")
+                    ?? "";
+
+    options.CdnBaseUrl = Environment.GetEnvironmentVariable("AWS_CDN_BASE_URL")
+                        ?? Environment.GetEnvironmentVariable("AWS__CdnBaseUrl")
+                        ?? awsSection.GetValue<string>("CdnBaseUrl")
+                        ?? "";
+
+    options.UseHttp = Environment.GetEnvironmentVariable("AWS_USE_HTTP") == "true"
+                     || Environment.GetEnvironmentVariable("AWS__UseHttp") == "true"
+                     || awsSection.GetValue<bool>("UseHttp");
 });
 
 builder.Services.AddSingleton<IDigitalOceanSpacesService, DigitalOceanSpacesService>();

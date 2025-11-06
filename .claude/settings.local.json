@@ -16,7 +16,8 @@
       "Bash(test:*)",
       "Bash(powershell -File D:side-projectstar-apiplay-question-sound.ps1)",
       "Bash(powershell -File:*)",
-      "Bash(start \"https://downloads.khinsider.com/game-soundtracks/album/symphonic-suite-dragon-quest-scene-separated-i-ix-2011/10-22.%2520Inn.mp3\")"
+      "Bash(start \"https://downloads.khinsider.com/game-soundtracks/album/symphonic-suite-dragon-quest-scene-separated-i-ix-2011/10-22.%2520Inn.mp3\")",
+      "Bash(dotnet build:*)"
     ],
     "deny": [],
     "ask": []
