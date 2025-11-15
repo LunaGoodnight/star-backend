@@ -11,7 +11,15 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(del nul)"
+      "Bash(del nul)",
+      "Bash(docker-compose up:*)",
+      "Bash(docker:*)",
+      "Bash(docker-compose:*)",
+      "Read(//srv/projects/**)",
+      "Bash(pm2 list:*)",
+      "Read(//root/.ssh/**)",
+      "Bash(ssh:*)",
+      "Bash(git remote set-url:*)"
     ],
     "deny": [],
     "ask": []
