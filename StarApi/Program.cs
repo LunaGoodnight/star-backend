@@ -54,16 +54,22 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Add CORS - Configure allowed origins for production
+// Add CORS - Allow *.vividcats.org and localhost for development
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        // TODO: Replace with your actual frontend domain(s)
-        var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>()
-            ?? new[] {  "http://star.vividcats.org","http://localhost:3000", "http://localhost:5173" }; // Default for development
-
-        policy.WithOrigins(allowedOrigins)
+        policy.SetIsOriginAllowed(origin =>
+              {
+                  var uri = new Uri(origin);
+                  // Allow all *.vividcats.org subdomains
+                  if (uri.Host.EndsWith(".vividcats.org") || uri.Host == "vividcats.org")
+                      return true;
+                  // Allow localhost for development
+                  if (uri.Host == "localhost")
+                      return true;
+                  return false;
+              })
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials();
