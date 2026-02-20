@@ -9,4 +9,8 @@ public class Post
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? PublishedAt { get; set; }
+
+    // Category relationship
+    public int? CategoryId { get; set; }
+    public Category? Category { get; set; }
 }

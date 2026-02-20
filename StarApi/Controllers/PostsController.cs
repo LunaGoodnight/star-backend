@@ -27,8 +27,8 @@ public class PostsController : ControllerBase
         var isAdmin = User.Identity?.IsAuthenticated ?? false;
 
         var posts = isAdmin
-            ? await _context.Posts.OrderByDescending(p => p.CreatedAt).ToListAsync()
-            : await _context.Posts.Where(p => !p.IsDraft).OrderByDescending(p => p.PublishedAt).ToListAsync();
+            ? await _context.Posts.Include(p => p.Category).OrderByDescending(p => p.CreatedAt).ToListAsync()
+            : await _context.Posts.Include(p => p.Category).Where(p => !p.IsDraft).OrderByDescending(p => p.PublishedAt).ToListAsync();
 
         return Ok(posts);
     }
@@ -37,7 +37,7 @@ public class PostsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Post>> GetPost(int id)
     {
-        var post = await _context.Posts.FindAsync(id);
+        var post = await _context.Posts.Include(p => p.Category).FirstOrDefaultAsync(p => p.Id == id);
 
         if (post == null)
         {
@@ -92,6 +92,7 @@ public class PostsController : ControllerBase
         existingPost.Title = post.Title;
         existingPost.Content = post.Content;
         existingPost.IsDraft = post.IsDraft;
+        existingPost.CategoryId = post.CategoryId;
         existingPost.UpdatedAt = DateTime.UtcNow;
 
         // Set PublishedAt when publishing for the first time

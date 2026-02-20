@@ -352,12 +352,7 @@ docker compose logs -f starapi
 
 ### 3. Database Migrations
 
-If you added new migrations:
-```bash
-# Migrations run automatically on startup via Program.cs
-# Check logs to verify
-docker compose logs starapi | grep -i migration
-```
+See the detailed [Migration Workflow](#-migration-workflow) section below.
 
 ---
 
@@ -533,6 +528,269 @@ docker exec -it starapi-db psql -U postgres -d starblog
 - [ ] Update Next.js frontend API URL
 - [ ] Create database backup schedule
 - [ ] Monitor logs and performance
+
+---
+
+## 🔄 Migration Workflow
+
+This section explains how to deploy code changes with database migrations step by step.
+
+### Overview
+
+```
+Local: Code Changes → Create Migration → Test → Commit & Push
+  ↓
+VPS: Git Pull → Docker Rebuild → Apply Migration → Restart → Verify
+```
+
+---
+
+### Step 1: Make Code Changes (Local)
+
+Edit your models, add new entities, etc.
+
+**Why:** Development happens locally where you have IDE support, debugging, and fast iteration.
+
+---
+
+### Step 2: Create Migration (Local)
+
+```bash
+cd StarApi
+dotnet ef migrations add <MigrationName>
+```
+
+**Example:**
+```bash
+dotnet ef migrations add AddCategory
+```
+
+**Why:**
+- EF Core migrations track database schema changes as code files
+- Version-controlled = you can see what changed and when
+- Creating locally ensures it compiles before deploying
+
+**Files created:**
+```
+Migrations/
+├── 20260220120953_AddCategory.cs           # Up/Down migration logic
+└── 20260220120953_AddCategory.Designer.cs  # Metadata snapshot
+```
+
+---
+
+### Step 3: Test Locally (Recommended)
+
+```bash
+dotnet ef database update
+dotnet run
+```
+
+**Why:**
+- Verify migration applies without errors
+- Confirm your app works with the new schema
+- Catch issues before they hit production
+
+---
+
+### Step 4: Commit & Push
+
+```bash
+git add .
+git commit -m "Add Category model with Post relationship"
+git push origin main
+```
+
+**Why:**
+- Git is your source of truth
+- Migration files MUST be committed (VPS needs them)
+- Good commit messages = documentation
+
+---
+
+### Step 5: Pull on VPS
+
+```bash
+ssh user@your-vps
+cd /opt/star-api
+git pull origin main
+```
+
+**Why:** Sync VPS with latest code including new migration files.
+
+---
+
+### Step 6: Rebuild Docker Image
+
+```bash
+docker compose build --no-cache
+```
+
+**Why:**
+- `--no-cache` = fresh build with all new code
+- Without rebuilding, container runs OLD code
+- New image contains your updated application
+
+**Faster alternative (uses cache):**
+```bash
+docker compose build
+```
+
+---
+
+### Step 7: Apply Migration
+
+#### Option A: Temporary Container (Recommended)
+
+```bash
+docker run --rm \
+  --network starapi_starapi-network \
+  -v $(pwd):/src \
+  -w /src/StarApi \
+  -e ConnectionStrings__DefaultConnection="Host=starapi-db;Port=5432;Database=starblog;Username=postgres;Password=YOUR_PASSWORD" \
+  mcr.microsoft.com/dotnet/sdk:9.0 \
+  dotnet ef database update
+```
+
+**Why this approach:**
+| Flag | Purpose |
+|------|---------|
+| `--rm` | Remove container after completion (clean) |
+| `--network` | Connect to same network as your database |
+| `-v $(pwd):/src` | Mount code so it can read migration files |
+| SDK image | Has `dotnet ef` tools (runtime image doesn't) |
+
+**Benefits:**
+- Runs once and exits
+- Doesn't bloat production image
+- Full control over when migrations run
+
+#### Option B: Auto-Migration at Startup
+
+Add to `Program.cs` before `app.Run()`:
+
+```csharp
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+}
+```
+
+**Why this approach:**
+- Zero manual steps
+- Migrations apply automatically on every startup
+- Good for simple deployments
+
+**Trade-offs:**
+- Slower startup time
+- If migration fails, app won't start
+- Less control (can't preview changes)
+
+---
+
+### Step 8: Restart Application
+
+```bash
+docker compose up -d
+```
+
+**Why:**
+- `-d` = detached mode (runs in background)
+- Recreates containers with new image
+- If containers already running, this replaces them
+
+**Alternative (explicit stop first):**
+```bash
+docker compose down
+docker compose up -d
+```
+
+---
+
+### Step 9: Verify
+
+```bash
+# Check containers are running
+docker compose ps
+
+# Check for errors in logs
+docker compose logs -f starapi
+
+# Test API endpoint
+curl http://localhost:5002/api/posts
+```
+
+**Why:** Confirm:
+- Containers running (not restarting in a loop)
+- No errors in logs
+- API responds correctly
+
+---
+
+### Quick Copy-Paste Commands
+
+**On Local Machine:**
+```bash
+# 1. Create migration
+dotnet ef migrations add AddCategory
+
+# 2. Commit and push
+git add .
+git commit -m "Add Category model"
+git push
+```
+
+**On VPS:**
+```bash
+# 1. Pull code
+cd /opt/star-api
+git pull
+
+# 2. Rebuild
+docker compose build --no-cache
+
+# 3. Apply migration
+docker run --rm \
+  --network starapi_starapi-network \
+  -v $(pwd):/src \
+  -w /src/StarApi \
+  -e ConnectionStrings__DefaultConnection="Host=starapi-db;Port=5432;Database=starblog;Username=postgres;Password=YOUR_PASSWORD" \
+  mcr.microsoft.com/dotnet/sdk:9.0 \
+  dotnet ef database update
+
+# 4. Restart
+docker compose down && docker compose up -d
+
+# 5. Verify
+docker compose logs -f starapi
+```
+
+---
+
+### Rollback a Migration
+
+If something goes wrong:
+
+```bash
+# Rollback to previous migration
+dotnet ef database update <PreviousMigrationName>
+
+# Remove last migration file (only if NOT applied to production)
+dotnet ef migrations remove
+```
+
+---
+
+### Best Practices
+
+| Practice | Reason |
+|----------|--------|
+| Test migrations locally first | Catch errors before production |
+| Backup database before migrating | Safety net for rollback |
+| Use meaningful names | `AddCategory` not `Migration1` |
+| Never edit applied migrations | Creates inconsistency between environments |
+| One feature per migration | Easier to debug and rollback |
 
 ---
 
