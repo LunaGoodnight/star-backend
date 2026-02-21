@@ -25,7 +25,18 @@
       "Bash(powershell -File D:side-projectstar-apiplay-question-sound.ps1)",
       "Bash(powershell -File:*)",
       "Bash(start \"https://downloads.khinsider.com/game-soundtracks/album/symphonic-suite-dragon-quest-scene-separated-i-ix-2011/10-22.%2520Inn.mp3\")",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(dotnet ef migrations add:*)",
+      "Bash(git -C \"D:\\\\side-project\\\\star-api\\\\StarApi\" status)",
+      "Bash(git -C \"D:\\\\side-project\\\\star-admin\" status)",
+      "Bash(git -C \"D:\\\\side-project\\\\star-api\\\\StarApi\" log --oneline -3)",
+      "Bash(git -C \"D:\\\\side-project\\\\star-admin\" log --oneline -3)",
+      "Bash(git -C \"D:\\\\side-project\\\\star-api\\\\StarApi\" add StarApi/Controllers/PostsController.cs StarApi/Models/Post.cs StarApi/Migrations/20260221150513_AddPostThumbnail.cs StarApi/Migrations/20260221150513_AddPostThumbnail.Designer.cs StarApi/Migrations/ApplicationDbContextModelSnapshot.cs)",
+      "Bash(git -C \"D:\\\\side-project\\\\star-api\\\\StarApi\" commit -m \"$\\(cat <<''EOF''\nfeat: Add Thumbnail field to Post and allow manual PublishedAt\n\n- Add optional Thumbnail field for post featured images\n- Allow manual PublishedAt date for migrating old content\n- Add database migration for Thumbnail column\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git -C \"D:\\\\side-project\\\\star-admin\" add app/post/[id]/page.tsx components/tiptap-templates/simple/simple-editor.tsx lib/types.ts)",
+      "Bash(git -C \"D:\\\\side-project\\\\star-admin\" commit -m \"$\\(cat <<''EOF''\nfeat: Add thumbnail upload and custom publish date in editor\n\n- Add thumbnail upload with preview and remove button\n- Add publish date picker for manual date setting\n- Support migrating old content with original dates\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git -C \"D:\\\\side-project\\\\star-api\\\\StarApi\" push)",
+      "Bash(git -C \"D:\\\\side-project\\\\star-admin\" push)"
     ],
     "deny": [],
     "ask": []
