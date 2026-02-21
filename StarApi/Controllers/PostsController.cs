@@ -62,6 +62,7 @@ public class PostsController : ControllerBase
         post.CreatedAt = DateTime.UtcNow;
         post.UpdatedAt = DateTime.UtcNow;
 
+        // Use provided PublishedAt or default to now when publishing
         if (!post.IsDraft && post.PublishedAt == null)
         {
             post.PublishedAt = DateTime.UtcNow;
@@ -93,10 +94,15 @@ public class PostsController : ControllerBase
         existingPost.Content = post.Content;
         existingPost.IsDraft = post.IsDraft;
         existingPost.CategoryId = post.CategoryId;
+        existingPost.Thumbnail = post.Thumbnail;
         existingPost.UpdatedAt = DateTime.UtcNow;
 
-        // Set PublishedAt when publishing for the first time
-        if (!post.IsDraft && existingPost.PublishedAt == null)
+        // Allow manual PublishedAt override, or default to now when publishing for the first time
+        if (post.PublishedAt != null)
+        {
+            existingPost.PublishedAt = post.PublishedAt;
+        }
+        else if (!post.IsDraft && existingPost.PublishedAt == null)
         {
             existingPost.PublishedAt = DateTime.UtcNow;
         }
