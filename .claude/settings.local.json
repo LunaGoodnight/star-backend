@@ -36,7 +36,9 @@
       "Bash(git -C \"D:\\\\side-project\\\\star-admin\" add app/post/[id]/page.tsx components/tiptap-templates/simple/simple-editor.tsx lib/types.ts)",
       "Bash(git -C \"D:\\\\side-project\\\\star-admin\" commit -m \"$\\(cat <<''EOF''\nfeat: Add thumbnail upload and custom publish date in editor\n\n- Add thumbnail upload with preview and remove button\n- Add publish date picker for manual date setting\n- Support migrating old content with original dates\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git -C \"D:\\\\side-project\\\\star-api\\\\StarApi\" push)",
-      "Bash(git -C \"D:\\\\side-project\\\\star-admin\" push)"
+      "Bash(git -C \"D:\\\\side-project\\\\star-admin\" push)",
+      "Bash(git -C /srv/projects/star-backend status)",
+      "Bash(git -C /srv/projects/star-backend log --oneline -5)"
     ],
     "deny": [],
     "ask": []
