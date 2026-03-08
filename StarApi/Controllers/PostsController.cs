@@ -21,16 +21,33 @@ public class PostsController : ControllerBase
 
     // GET: api/posts
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Post>>> GetPosts()
+    public async Task<ActionResult<IEnumerable<Post>>> GetPosts([FromQuery] int? page, [FromQuery] int? pageSize)
     {
         // Public users only see published posts, admin sees all
         var isAdmin = User.Identity?.IsAuthenticated ?? false;
 
-        var posts = isAdmin
-            ? await _context.Posts.Include(p => p.Category).OrderByDescending(p => p.CreatedAt).ToListAsync()
-            : await _context.Posts.Include(p => p.Category).Where(p => !p.IsDraft).OrderByDescending(p => p.PublishedAt).ToListAsync();
+        var query = isAdmin
+            ? _context.Posts.Include(p => p.Category).OrderByDescending(p => p.CreatedAt)
+            : _context.Posts.Include(p => p.Category).Where(p => !p.IsDraft).OrderByDescending(p => p.PublishedAt);
 
-        return Ok(posts);
+        if (page.HasValue && pageSize.HasValue && page > 0 && pageSize > 0)
+        {
+            var totalCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize.Value);
+
+            Response.Headers["X-Total-Count"] = totalCount.ToString();
+            Response.Headers["X-Total-Pages"] = totalPages.ToString();
+            Response.Headers["Access-Control-Expose-Headers"] = "X-Total-Count, X-Total-Pages";
+
+            var posts = await query
+                .Skip((page.Value - 1) * pageSize.Value)
+                .Take(pageSize.Value)
+                .ToListAsync();
+
+            return Ok(posts);
+        }
+
+        return Ok(await query.ToListAsync());
     }
 
     // GET: api/posts/5
