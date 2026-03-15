@@ -26,15 +26,25 @@ public class PostsController : ControllerBase
         // Public users only see published posts, admin sees all
         var isAdmin = User.Identity?.IsAuthenticated ?? false;
 
-        var query = isAdmin
-            ? _context.Posts.Include(p => p.Category).OrderByDescending(p => p.CreatedAt)
-            : _context.Posts.Include(p => p.Category).Where(p => !p.IsDraft).OrderByDescending(p => p.PublishedAt);
+        // Start with base query
+        IQueryable<Post> baseQuery = _context.Posts.Include(p => p.Category);
+
+        // Filter by draft status
+        if (!isAdmin)
+        {
+            baseQuery = baseQuery.Where(p => !p.IsDraft);
+        }
 
         // Filter by category if specified
         if (categoryId.HasValue)
         {
-            query = query.Where(p => p.CategoryId == categoryId.Value);
+            baseQuery = baseQuery.Where(p => p.CategoryId == categoryId.Value);
         }
+
+        // Apply ordering
+        var query = isAdmin
+            ? baseQuery.OrderByDescending(p => p.CreatedAt)
+            : baseQuery.OrderByDescending(p => p.PublishedAt);
 
         if (page.HasValue && pageSize.HasValue && page > 0 && pageSize > 0)
         {
