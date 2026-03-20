@@ -17,5 +17,12 @@ RUN dotnet publish "./StarApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p
 
 FROM base AS final
 WORKDIR /app
+
+# Reduce runtime memory on VPS
+# - gcServer=0: Use Workstation GC instead of Server GC (less memory for moderate traffic)
+# - GCConserveMemory=9: Most aggressive memory conservation (scale 0-9)
+ENV DOTNET_gcServer=0
+ENV DOTNET_GCConserveMemory=9
+
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "StarApi.dll"]
