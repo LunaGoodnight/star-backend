@@ -21,7 +21,7 @@ public class PostsController : ControllerBase
 
     // GET: api/posts
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Post>>> GetPosts([FromQuery] int? page, [FromQuery] int? pageSize, [FromQuery] int? categoryId)
+    public async Task<ActionResult<IEnumerable<Post>>> GetPosts([FromQuery] int? page, [FromQuery] int? pageSize, [FromQuery] int? categoryId, [FromQuery] string? search)
     {
         // Public users only see published posts, admin sees all
         var isAdmin = User.Identity?.IsAuthenticated ?? false;
@@ -39,6 +39,15 @@ public class PostsController : ControllerBase
         if (categoryId.HasValue)
         {
             baseQuery = baseQuery.Where(p => p.CategoryId == categoryId.Value);
+        }
+
+        // Search by title or content
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim();
+            baseQuery = baseQuery.Where(p =>
+                EF.Functions.ILike(p.Title, $"%{term}%") ||
+                EF.Functions.ILike(p.Content, $"%{term}%"));
         }
 
         // Apply ordering
