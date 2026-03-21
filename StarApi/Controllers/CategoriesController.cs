@@ -22,6 +22,7 @@ public class CategoriesController : ControllerBase
     public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
     {
         var categories = await _context.Categories
+            .Where(c => _context.Posts.Any(p => p.CategoryId == c.Id && !p.IsDraft))
             .OrderBy(c => c.Name)
             .Select(c => new { c.Id, c.Name })
             .ToListAsync();
