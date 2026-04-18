@@ -21,7 +21,7 @@ public class PostsController : ControllerBase
 
     // GET: api/posts
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Post>>> GetPosts([FromQuery] int? page, [FromQuery] int? pageSize, [FromQuery] int? categoryId, [FromQuery] string? search)
+    public async Task<ActionResult<IEnumerable<Post>>> GetPosts([FromQuery] int? page, [FromQuery] int? pageSize, [FromQuery] int? categoryId, [FromQuery] string? search, [FromQuery] bool? isDraft)
     {
         // Public users only see published posts, admin sees all
         var isAdmin = User.Identity?.IsAuthenticated ?? false;
@@ -33,6 +33,10 @@ public class PostsController : ControllerBase
         if (!isAdmin)
         {
             baseQuery = baseQuery.Where(p => !p.IsDraft);
+        }
+        else if (isDraft.HasValue)
+        {
+            baseQuery = baseQuery.Where(p => p.IsDraft == isDraft.Value);
         }
 
         // Filter by category if specified
